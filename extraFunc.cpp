@@ -1,7 +1,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <mmintrin.h>
+#include <intrin.h>
 
+#pragma intrinsic(_umul128)
 namespace eFunc
 {
     bool addOvf(uint_fast64_t &a,const uint_fast64_t &b)  { 
@@ -24,11 +26,8 @@ namespace eFunc
         dif = a - b;
         return ret;
     }
-    uint_fast64_t mulH(const uint_fast64_t &a, const uint_fast64_t &b)  {  
-        return (uint_fast64_t)_m_pmulhw ((__m64)a,(__m64)b);
-    }
-    uint_fast64_t mulL(const uint_fast64_t &a, const uint_fast64_t &b)  {  
-        return (uint_fast64_t)_m_pmullw ((__m64)a,(__m64)b);
+    uint_fast64_t mul128(const uint_fast64_t &Multiplicand, const uint_fast64_t &Multiplier,uint_fast64_t &HighProduct)  {  
+        return _umul128(Multiplier, Multiplicand, &HighProduct);
     }
 
 }

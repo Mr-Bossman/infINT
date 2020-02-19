@@ -10,7 +10,6 @@
 
 //#include "extraFunc.cpp"
 
-#include <immintrin.h>
 
 template <class Type>
 int aksPrime(Type P){
@@ -26,14 +25,16 @@ int aksPrime(Type P){
     return -1;
 }
 int main() {
-    uint64_t a = UINT64_MAX;
-    uint64_t b = UINT64_MAX;
+    infINT a = UINT64_MAX;
+    infINT b = UINT64_MAX;
+    a.value[1] = UINT64_MAX;
+    b.value[1] = UINT64_MAX;
 
-    //for (int i = a.value.size-1; i >= 0 ;i--)std::cout << std::bitset<64>(a.value[i]) << ',';
-    //std::cout << std::endl;
-    //infINT c = a * b;
-    //for (int i = c.value.size-1; i >= 0 ;i--)std::cout << std::bitset<64>(c.value[i]) << ',';
-    std::cout <<  std::bitset<64>(eFunc::mulH(a,b)) << std::bitset<64>(eFunc::mulL(a,b));
+    infINT c = b * a;
+    for (int i = c.value.size-1; i >= 0 ;i--)std::cout << std::bitset<64>(c.value[i]) << ',';
+    std::cout << std::endl << std::endl;
+    c = a * b;
+    for (int i = c.value.size-1; i >= 0 ;i--)std::cout << std::bitset<64>(c.value[i]) << ',';
     /*do {
         std::cout << '\n' << "Press a key to continue...";
     } while (std::cin.get() != '\n');*/

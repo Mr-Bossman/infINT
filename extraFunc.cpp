@@ -29,5 +29,13 @@ namespace eFunc
     uint_fast64_t mul128(const uint_fast64_t &Multiplicand, const uint_fast64_t &Multiplier,uint_fast64_t &HighProduct)  {  
         return _umul128(Multiplier, Multiplicand, &HighProduct);
     }
+    uint_fast64_t div_rq(const uint_fast64_t &Dividend, const uint_fast64_t &Divisor,uint_fast64_t &Quotient)  {  
+        Quotient = Dividend/Divisor;
+        return Dividend%Divisor;
+    }
+    uint_fast64_t div_qr(const uint_fast64_t &Dividend, const uint_fast64_t &Divisor,uint_fast64_t &Remainder)  {
+        Remainder = Dividend%Divisor;
+        return Dividend/Divisor;
+    }
 
 }

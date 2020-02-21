@@ -4,7 +4,7 @@
 #include <bitset>
 #include <string.h>
 #include <String>
-#include "infINT.cpp"
+#include "uint_inf.cpp"
 //#include "InfInt.h"
 #include <assert.h>
 
@@ -25,16 +25,8 @@ int aksPrime(Type P){
     return -1;
 }
 int main() {
-    infINT a = UINT64_MAX;
-    infINT b = UINT64_MAX;
-    a.value[1] = UINT64_MAX;
-    b.value[1] = UINT64_MAX;
 
-    infINT c = b * a;
-    for (int i = c.value.size-1; i >= 0 ;i--)std::cout << std::bitset<64>(c.value[i]) << ',';
-    std::cout << std::endl << std::endl;
-    c = a * b;
-    for (int i = c.value.size-1; i >= 0 ;i--)std::cout << std::bitset<64>(c.value[i]) << ',';
+    
     /*do {
         std::cout << '\n' << "Press a key to continue...";
     } while (std::cin.get() != '\n');*/

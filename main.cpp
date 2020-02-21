@@ -12,21 +12,33 @@
 
 
 template <class Type>
-int aksPrime(Type P){
-    Type b=P,a=2,out=P;
+int aksPrime(Type &P){
+    Type b=P,columb=2,out=P;
     int checks = 0; 
-    while(a<(P/2)+1){
+    while(columb<((P>>1)+1)){
         b--;
-        out*=b;
-        out/=a++;
-        if((out%P) != 0)return checks;
+        std::cout <<'.' << std::endl;
+        out *= b;
+        std::cout <<'.' << std::endl;
+        out /= columb;
+        std::cout <<'.' << std::endl;
+        columb++;
+        if((out%P) != 0) return checks;
+        std::cout <<"It took " << checks << " checks so far. There are " << out.realSize() << " Qwords in the variable." << std::endl;
         checks++;
     }
     return -1;
 }
 int main() {
+    for(uint_inf primes = 67280421310717;primes < UINT_FAST64_MAX; primes += 2){
+        int checks = aksPrime<uint_inf>(primes);
+        if(checks == -1){
+            std::cout << primes.value[0] << " is a prime number!!!" << std::endl;
+        } else {
+            std::cout <<"It took " << checks << "checks to find out " << primes.value[0] << " is not a prime number" << std::endl;
+        }
+    }
 
-    
     /*do {
         std::cout << '\n' << "Press a key to continue...";
     } while (std::cin.get() != '\n');*/

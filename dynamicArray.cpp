@@ -8,11 +8,35 @@ class dynamic_array {
     size_t size;
     Type fill = 0;
     dynamic_array(Type initVal = 0 ,size_t size = 1,const Type fill = 0){
-            this->size = size;
-            pointer = new Type[size];
-            memset(pointer, fill, size*sizeof(Type));
-            pointer[0] = initVal;
-            this->fill = fill;
+        this->size = size;
+        pointer = new Type[size];
+        memset(pointer, fill, size*sizeof(Type));
+        pointer[0] = initVal;
+        this->fill = fill;
+    }
+    ~dynamic_array(){
+        delete[] pointer;
+        size = 0;
+        pointer = nullptr;
+    }
+    dynamic_array (const dynamic_array& rvalue) {
+        delete[] pointer;
+        this->size = rvalue.size;
+        pointer = new Type[rvalue.size];
+        memcpy(pointer, rvalue.pointer, sizeof(Type)*rvalue.size );
+    }
+    dynamic_array& operator= (dynamic_array&& rvalue){
+        delete[] pointer;
+        this->size = rvalue.size;
+        pointer = new Type[rvalue.size];
+        memcpy(pointer, rvalue.pointer, sizeof(Type)*rvalue.size );
+        return *this;
+    }
+    void operator=(const dynamic_array &rvalue) {
+        delete[] pointer;
+        this->size = rvalue.size;
+        pointer = new Type[rvalue.size];
+        memcpy(pointer, rvalue.pointer, sizeof(Type)*rvalue.size );
     }
     size_t realSize() const {
         size_t i = size-1;
@@ -40,10 +64,5 @@ class dynamic_array {
         delete[] pointer;// need to set end to 0 with memset 
         this->size = size;
         return pointer = new_ptr;
-    }
-    void Delete(){
-        delete[] pointer;
-        size = 0;
-        pointer = nullptr;
     }
 };

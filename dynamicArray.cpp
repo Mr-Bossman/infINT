@@ -19,6 +19,11 @@ class dynamic_array {
         size = 0;
         pointer = nullptr;
     }
+    void del(){
+        delete[] pointer;
+        size = 0;
+        pointer = nullptr;
+    }
     dynamic_array (const dynamic_array& rvalue) {
         delete[] pointer;
         this->size = rvalue.size;
@@ -61,7 +66,7 @@ class dynamic_array {
         while(this->size--){
             new_ptr[this->size] = pointer[this->size];
         }
-        delete[] pointer;// need to set end to 0 with memset 
+        delete[] pointer; 
         this->size = size;
         return pointer = new_ptr;
     }

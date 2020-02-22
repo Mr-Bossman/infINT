@@ -1,21 +1,18 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
+#include <sstream>
+#include <string>
 #include "dynamicArray.cpp"
 #include "extraFunc.cpp"
 #include <bitset>
-
 /* unsinged int library 
 needs better multiplacation and division functions
-add returns for some void functions
-add modulo 
-add / 
-add nessesary consts
-find memory leeks
+add mod and div combo functions
+find memory leeks !!!! big problem
 find problems
+streamline function implementatons
 */
-
 class uint_inf{
     public:
     dynamic_array <uint_fast64_t> value;
@@ -29,6 +26,9 @@ class uint_inf{
         this->value = rvalue.value;
     }
 
+    ~uint_inf(){
+        this->value.del();
+    }
     uint_inf& operator=(const uint_inf &rvalue){
         this->value = rvalue.value;
         return *this;
@@ -36,74 +36,73 @@ class uint_inf{
     void operator=(const uint_fast64_t &rvalue){
         this->value[0] = rvalue;
     }
-    size_t realSize(){
+    void del(){
+        return this->value.del();
+    }
+    size_t realSize()const{
         return this->value.realSize();
     }
-    bool operator==(const uint_inf &rvalue){
-        for(uint_fast64_t i = 0; i < this->value.size; i++){
+    bool operator==(const uint_inf &rvalue)const{
+        for(uint_fast64_t i = 0; i < this->value.size; i++){ // probably broken
             if(this->value[i] != rvalue.value[i])return 0;
         }
         return 1;
     }
-    bool operator==(const uint_fast64_t &rvalue){
-        for(uint_fast64_t i = 1; i < this->value.size; i++){
-            if(this->value[i] != 0)return 0;
-        }
+    bool operator==(const uint_fast64_t &rvalue)const{
+        if(this->value.realSize()>1) return 0;
         return this->value[0] == rvalue;
     }
-    bool operator!=(const uint_inf &rvalue){
-        for(uint_fast64_t i = 0; i < this->value.size; i++){
+    bool operator!=(const uint_inf &rvalue)const{
+        for(uint_fast64_t i = 0; i < this->value.size; i++){ // broken
             if(this->value[i] != rvalue.value[i])return 1;
         }
         return 0;
     }
-    bool operator!=(const uint_fast64_t &rvalue){
-        for(uint_fast64_t i = 1; i < this->value.size; i++){
-            if(this->value[i] != 0)return 1;
-        }
+    bool operator!=(const uint_fast64_t &rvalue) const{
+        if(this->value.realSize()>1) return 1;
         return this->value[0] != rvalue;
     }
-    bool operator<(const uint_inf &rvalue){
+    bool operator<(const uint_inf &rvalue) const{
         if(this->value.realSize()<rvalue.value.realSize()) return 1;
         else if(this->value.realSize()>rvalue.value.realSize()) return 0;
         uint_fast64_t i = this->value.size-1;
         while(this->value[i] == rvalue.value[i] && i > 0)i--;
         return (this->value[i] < rvalue.value[i]);
     }
-    bool operator<(const uint_fast64_t &rvalue){
+    bool operator<(const uint_fast64_t &rvalue)const {
         if(this->value.realSize()>1) return 0;
         return (this->value[0] < rvalue);
     }
-    bool operator>(const uint_inf &rvalue){
+    bool operator>(const uint_inf &rvalue)const{
         if(this->value.realSize()>rvalue.value.realSize()) return 1;
         else if(this->value.realSize()<rvalue.value.realSize()) return 0;
         uint_fast64_t i = this->value.size-1;
         while(this->value[i] == rvalue.value[i] && i > 0)i--;
         return (this->value[i] > rvalue.value[i]);
     }
-    bool operator>(const uint_fast64_t &rvalue){
+    bool operator>(const uint_fast64_t &rvalue)const{
         if(this->value.realSize()>1) return 1;
         return (this->value[0] > rvalue);
     }
-    bool operator<=(const uint_inf &rvalue){
+    bool operator<=(const uint_inf &rvalue)const{
         if(this->value.realSize()<rvalue.value.realSize()) return 1;
         else if(this->value.realSize()>rvalue.value.realSize()) return 0;
         uint_fast64_t i = this->value.size-1;
         while(this->value[i] == rvalue.value[i] && i > 0)i--;
         return (this->value[i] <= rvalue.value[i]);
     }
-    bool operator<=(const uint_fast64_t &rvalue){
+    bool operator<=(const uint_fast64_t &rvalue)const{
         if(this->value.realSize()>1) return 0;
         return (this->value[0] <= rvalue);
     }
-    bool operator>=(const uint_inf &rvalue){
+    bool operator>=(const uint_inf &rvalue)const{
         if(this->value.realSize()>rvalue.value.realSize()) return 1;
         else if(this->value.realSize()<rvalue.value.realSize()) return 0;
         uint_fast64_t i = this->value.size-1;
         while(this->value[i] == rvalue.value[i] && i > 0)i--;
         return (this->value[i] >= rvalue.value[i]);
     }
-    bool operator>=(const uint_fast64_t &rvalue){
+    bool operator>=(const uint_fast64_t &rvalue)const{
         if(this->value.realSize()>1) return 1;
         return (this->value[0] >= rvalue);
     }
@@ -115,7 +114,7 @@ class uint_inf{
         this->value.pointer[this->value.size-1] >>= rvalue;
     }
     void operator<<=(const size_t &rvalue){
-        for(uint_fast64_t i = this->value.size-1; i > 0 ; i--){
+        for(uint_fast64_t i = this->value.size-1; i > 0 ; i--){ //broken becuse under flow
         uint_fast64_t part = this->value.pointer[i]<<rvalue | this->value.pointer[i-1]>>64-rvalue;
             this->value.pointer[i] = part;
         }
@@ -215,8 +214,6 @@ class uint_inf{
     }
     void operator+=(const uint_inf &rvalue){
         for(size_t i = 0;i < this->value.size || i < rvalue.value.size; i++){
-
-            
             if(eFunc::addOvf(this->value[i],rvalue.value[i])){
                 for(uint_fast64_t b = i+1;this->value[b]++ == (UINT64_MAX);b++);
             }
@@ -265,7 +262,7 @@ class uint_inf{
         return ret;
     }
     uint_inf operator*(const uint_inf &rvalue) const {
-        uint_inf out = uint_inf(0,this->value.size*rvalue.value.size); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
+        uint_inf out = uint_inf(0,(this->value.realSize()+1)*(rvalue.value.realSize()+1)); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t b = 0;b < rvalue.value.size; b++){
             for(size_t i = 0;i < this->value.size; i++){
                 uint_fast64_t highWord;
@@ -276,7 +273,7 @@ class uint_inf{
         return out;
     }
     uint_inf operator*(const uint_fast64_t &rvalue) const{
-        uint_inf out = uint_inf(0,this->value.size); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
+        uint_inf out = uint_inf(0,this->value.realSize()+1); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t i = 0;i < this->value.size; i++){
                 uint_fast64_t highWord;
                 out.addOffset(eFunc::mul128(rvalue,this->value[i],highWord),i);
@@ -285,15 +282,30 @@ class uint_inf{
         return out;
     }
     void operator*=(const uint_fast64_t &rvalue){
-        *this = *this*rvalue; // slow!!!!!
+        uint_inf out = uint_inf(0,this->value.realSize()+1); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
+        for(size_t i = 0;i < this->value.size; i++){
+                uint_fast64_t highWord;
+                out.addOffset(eFunc::mul128(rvalue,this->value[i],highWord),i);
+                out.addOffset(highWord,i+1);
+        }
+        *this = out; // slow
+        out.del(); 
     }
     void operator*=(const uint_inf &rvalue){
-        *this = *this*rvalue; // slow !!!!
+        uint_inf out = uint_inf(0,(this->value.realSize()+1)*(rvalue.value.realSize()+1)); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
+        for(size_t b = 0;b < rvalue.value.size; b++){
+            for(size_t i = 0;i < this->value.size; i++){
+                uint_fast64_t highWord;
+                out.addOffset(eFunc::mul128(rvalue.value[b],this->value[i],highWord),(b+i));
+                out.addOffset(highWord,(b+i)+1);
+            }
+        }
+        *this = out; // slow
+        out.del();   
     }
-
     void operator/=(const uint_inf &rvalue){
         uint_inf remainder = 0;
-        for(uint_fast64_t i = value.size-1; i-- > 0;){
+        for(uint_fast64_t i = value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
                 remainder <<= 1;
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
@@ -305,16 +317,39 @@ class uint_inf{
                     this->value[i] |= ((uint64_t)1<<b);
                 }
             }
-        }   //this->this->value[i] = eFunc::div_rq(this.this->value[io],rvalue.this->value[i],remainder);
+        }   
+        remainder.del();
+    }
+    void operator/=(const uint_fast64_t &rvalue){
+        uint_inf remainder = 0;
+        for(uint_fast64_t i = value.size; i-- > 0;){
+            for(uint_fast64_t b = 64; b-- > 0;){
+                remainder <<= 1;
+                if(uint_fast64_t temp = (this->value[i]>>b)&1){
+                    remainder.value[0] |= temp;
+                    this->value[i] ^= (temp<<b);
+                }
+                if (remainder >= rvalue){
+                    remainder -= rvalue;
+                    this->value[i] |= ((uint64_t)1<<b);
+                }
+            }
+        }   
+        remainder.del();
+    }
+    uint_inf operator/(const uint_fast64_t &rvalue) const {
+        uint_inf out = *this;
+        out /= rvalue;
+        return out;
     }
     uint_inf operator/(const uint_inf &rvalue) const {
         uint_inf out = *this;
         out /= rvalue;
         return out;
     }
-    void operator%=(const uint_inf &rvalue) {
+    void operator%=(const uint_fast64_t &rvalue) {
         uint_inf remainder = 0;
-        for(uint_fast64_t i = value.size-1; i-- > 0;){
+        for(uint_fast64_t i = value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
                 remainder <<= 1;
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
@@ -327,19 +362,65 @@ class uint_inf{
                 }
             }
         }  
-        *this = remainder; //this->this->value[i] = eFunc::div_rq(this.this->value[io],rvalue.this->value[i],remainder);
-        //delete &remainder;
+        *this = remainder; 
+        remainder.del();
+    }
+    void operator%=(const uint_inf &rvalue) {
+        uint_inf remainder = 0;
+        for(uint_fast64_t i = value.size; i-- > 0;){
+            for(uint_fast64_t b = 64; b-- > 0;){
+                remainder <<= 1;
+                if(uint_fast64_t temp = (this->value[i]>>b)&1){
+                    remainder.value[0] |= temp;
+                    this->value[i] ^= (temp<<b);
+                }
+                if (remainder >= rvalue){
+                    remainder -= rvalue;
+                    this->value[i] |= ((uint64_t)1<<b);
+                }
+            }
+        }  
+        *this = remainder;
+        remainder.del();
+    }
+    uint_inf divideRemainder(const uint_fast64_t &rvalue){
+        uint_inf remainder = 0;
+        for(uint_fast64_t i = this->value.size; i-- > 0;){
+            for(uint_fast64_t b = 64; b-- > 0;){
+                remainder <<= 1;
+                if(uint_fast64_t temp = (this->value[i]>>b)&1){
+                    remainder.value[0] |= temp;
+                    this->value[i] ^= (temp<<b);
+                }
+                if (remainder >= rvalue){
+                    remainder -= rvalue;
+                    this->value[i] |= ((uint64_t)1<<b);
+                }
+            }
+        }  
+        return remainder;
     }
     uint_inf operator%(const uint_inf &rvalue) const {
         uint_inf out = *this;
         out %= rvalue;
         return out;
     }
-
-    //void operator/=(const uint_fast64_t &rvalue){
-        //for(uint64_t i = rvalue.this->value.size-1;;){
-        //uint_fast64_t remainder = 0;
-        //this->this->value[i] = eFunc::div_rq(this.this->value[io],rvalue.this->value[i],remainder);
-        //}
-    //}
+    uint_inf operator%(const uint_fast64_t &rvalue) const {
+        uint_inf out = *this;
+        out %= rvalue;
+        return out;
+    }
+    std::string toString2(){
+        std::stringstream out;
+        for(uint_fast64_t i = this->value.size; i-- > 0;){
+            out << std::bitset<64>(this->value[i]);
+        }
+        return out.str();
+    }
+    std::string toString10(){
+        std::string out;
+        uint_inf div = *this;
+        while(div != 0) out.insert(0,std::to_string((div.divideRemainder(10)).value[0]));
+        return out;
+    }
 };

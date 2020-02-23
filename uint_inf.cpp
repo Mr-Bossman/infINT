@@ -25,7 +25,6 @@ class uint_inf{
         this->value = dynamic_array <uint_fast64_t>(0,1,0);
         this->value = rvalue.value;
     }
-
     ~uint_inf(){
         this->value.del();
     }
@@ -43,10 +42,10 @@ class uint_inf{
         return this->value.realSize();
     }
     bool operator==(const uint_inf &rvalue)const{
-        for(uint_fast64_t i = 0; i < this->value.size; i++){ // probably broken
-            if(this->value[i] != rvalue.value[i])return 0;
-        }
-        return 1;
+        if(this->value.realSize()!=rvalue.value.realSize()) return 0;
+        uint_fast64_t i = this->value.size-1;
+        while(this->value[i] == rvalue.value[i] && i > 0)i--;
+        return (this->value[i] == rvalue.value[i]);
     }
     bool operator==(const uint_fast64_t &rvalue)const{
         if(this->value.realSize()>1) return 0;
@@ -108,17 +107,17 @@ class uint_inf{
     }
     void operator>>=(const size_t &rvalue){
         for(uint_fast64_t i = 0; i < this->value.size-1; i++){
-        uint_fast64_t part = this->value.pointer[i]>>rvalue | this->value.pointer[i+1]<<(uint64_t)64-rvalue;
-            this->value.pointer[i] = part;
+            this->value[i] >>= rvalue; 
+            this->value[i] |= this->value[i+1]<<(uint64_t)64-rvalue;
         }
-        this->value.pointer[this->value.size-1] >>= rvalue;
+        this->value[this->value.size-1] >>= rvalue;
     }
     void operator<<=(const size_t &rvalue){
-        for(uint_fast64_t i = this->value.size-1; i > 0 ; i--){
-        uint_fast64_t part = this->value.pointer[i]<<rvalue | this->value.pointer[i-1]>>(uint64_t)64-rvalue;
-            this->value.pointer[i] = part;
+        for(uint_fast64_t i = this->value.realSize()+1; i > 0 ; i--){
+            this->value[i] <<= rvalue;
+            this->value[i] |= this->value[i-1]>>(uint64_t)64-rvalue;
         }
-        this->value.pointer[0] <<= rvalue;
+        this->value[0] <<= rvalue;
     }
     uint_inf operator<<(const size_t &rvalue) const {
         uint_inf ret = *this;
@@ -129,6 +128,20 @@ class uint_inf{
         uint_inf ret = *this;
         ret >>= rvalue;
         return ret;
+    }
+    void div2() {
+        for(uint_fast64_t i = 0; i < this->value.size-1; i++){
+            this->value[i] >>= 1; 
+            this->value[i] |= this->value[i+1]<<(uint64_t)63;
+        }
+        this->value[this->value.size-1] >>= 1;
+    }
+    void mul2() {
+        for(uint_fast64_t i = this->value.realSize()+1; i > 0 ; i--){
+            this->value[i] <<= 1;
+            this->value[i] |= this->value[i-1]>>(uint64_t)63;
+        }
+        this->value[0] <<= 1;
     }
     void operator|=(const uint_inf &rvalue){
         uint_fast64_t test = (rvalue.value.realSize() > this->value.realSize())? rvalue.value.realSize():this->value.realSize();
@@ -307,7 +320,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = this->value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     this->value[i] ^= (temp<<b);
@@ -324,7 +337,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = this->value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     this->value[i] ^= (temp<<b);
@@ -351,7 +364,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     this->value[i] ^= (temp<<b);
@@ -369,7 +382,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     this->value[i] ^= (temp<<b);
@@ -387,7 +400,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = this->value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     this->value[i] ^= (temp<<b);
@@ -404,7 +417,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = this->value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (this->value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     this->value[i] ^= (temp<<b);
@@ -422,7 +435,7 @@ class uint_inf{
         uint_inf remainder = 0;
         for(uint_fast64_t i = out.value.size; i-- > 0;){
             for(uint_fast64_t b = 64; b-- > 0;){
-                remainder <<= 1;
+                remainder.mul2();
                 if(uint_fast64_t temp = (out.value[i]>>b)&1){
                     remainder.value[0] |= temp;
                     out.value[i] ^= (temp<<b);
@@ -437,8 +450,21 @@ class uint_inf{
     }
     uint_inf operator%(const uint_fast64_t &rvalue) const {
         uint_inf out = *this;
-        out %= rvalue;
-        return out;
+        uint_inf remainder = 0;
+        for(uint_fast64_t i = out.value.size; i-- > 0;){
+            for(uint_fast64_t b = 64; b-- > 0;){
+                remainder.mul2();
+                if(uint_fast64_t temp = (out.value[i]>>b)&1){
+                    remainder.value[0] |= temp;
+                    out.value[i] ^= (temp<<b);
+                }
+                if (remainder >= rvalue){
+                    remainder -= rvalue;
+                    out.value[i] |= ((uint64_t)1<<b);
+                }
+            }
+        }  
+        return remainder;
     }
     std::string toString2() const {
         std::stringstream out;

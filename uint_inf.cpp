@@ -292,7 +292,7 @@ class uint_inf{
         out.del(); 
     }
     void operator*=(const uint_inf &rvalue){
-        uint_inf out = uint_inf(0,(this->value.realSize()+1)*(rvalue.value.realSize()+1)); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
+        uint_inf out = uint_inf(0,(this->value.realSize()+1)*20); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t b = 0;b < rvalue.value.size; b++){
             for(size_t i = 0;i < this->value.size; i++){
                 uint_fast64_t highWord;

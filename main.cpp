@@ -15,18 +15,19 @@
 template <class Type>
 int aksPrime(uint_inf &P){
     uint_inf b=P,columb=2,out=P,loops = (P>>1)+1;
-    int checks = 0;
+    int checks = 1;
     while(columb<loops && checks < 100){
+        uint64_t size = out.realSize();
         b--;
-        std::cout <<'.  ';
+        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing.  ";
         out *= b;
-        std::cout <<'.. ';
+        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing.. ";
         out /= columb;
-        std::cout <<'...';
+        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing...";
         columb++;
         uint_inf check = (out%P);
-        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << out.realSize() << " Qwords in the variable. Testing";
         if(check != 0) return checks;
+        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing   ";
         checks++;
     }
     return -1;

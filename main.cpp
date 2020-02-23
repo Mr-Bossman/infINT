@@ -16,13 +16,13 @@ template <class Type>
 int aksPrime(uint_inf &P){
     uint_inf b=P,columb=2,out=P,loops = (P>>1)+1;
     int checks = 0;
-    while(columb<loops && checks < 500){
+    while(columb<loops && checks < 100){
         b--;
-        std::cout <<'.';
+        std::cout <<'.  ';
         out *= b;
-        std::cout <<'.';
+        std::cout <<'.. ';
         out /= columb;
-        std::cout <<'.';
+        std::cout <<'...';
         columb++;
         uint_inf check = (out%P);
         std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << out.realSize() << " Qwords in the variable. Testing";
@@ -35,13 +35,13 @@ int main() {
     std::ofstream file1,file2;
     file1.open ("out.txt");
     file2.open ("primes.txt");
-    //int size = 67108864; 
+    int size = 100; 
     //start at num with the first digit 5 ever power of 16^x - 1 will end in 5 i think
 
     uint8_t fives = 0;
-    uint_inf primes = uint_inf(67876499 ,2);
+    uint_inf primes = uint_inf(UINT64_MAX ,2);
     //for(int i = 100; i > 1; i--)primes *= i;
-    //for(int i = 1; i < size; i++)primes.value[i] = UINT64_MAX;
+    for(int i = 1; i < size; i++)primes.value[i] = UINT64_MAX;
     while(true){
         if(fives == 5)primes += 2,fives = 1; 
         int checks = aksPrime<uint_inf>(primes);

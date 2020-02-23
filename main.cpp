@@ -16,7 +16,7 @@ template <class Type>
 int aksPrime(uint_inf &P){
     uint_inf b=P,columb=2,out=P,loops = (P>>1)+1;
     int checks = 0;
-    while(columb<loops && checks < 5000){ // memory leek (P>>1)
+    while(columb<loops && checks < 500){
         b--;
         std::cout <<'.';
         out *= b;
@@ -24,29 +24,31 @@ int aksPrime(uint_inf &P){
         out /= columb;
         std::cout <<'.';
         columb++;
-        if(out%P != 0) return checks;
+        uint_inf check = (out%P);
         std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << out.realSize() << " Qwords in the variable. Testing";
+        if(check != 0) return checks;
         checks++;
     }
     return -1;
 }
 int main() {
-    std::ofstream file1,file2,file3;
+    std::ofstream file1,file2;
     file1.open ("out.txt");
-    file2.open ("out2.txt");
-    file3.open ("primes.txt");
+    file2.open ("primes.txt");
+    int size = 67108864; 
+    //start at num with the first digit 5 ever power of 16^x - 1 will end in 5 i think
 
-    //start at num with the first digit 5 ever power of 2 - 1 will end in 5 i think
     uint8_t fives = 0;
-    uint_inf primes = uint_inf(UINT_FAST64_MAX,2);
-    primes.value[1] = UINT_FAST64_MAX;
+    uint_inf primes = uint_inf(UINT64_MAX,size);
+    //for(int i = 100; i > 1; i--)primes *= i;
+    for(int i = 1; i < size; i++)primes.value[i] = UINT64_MAX;
     while(true){
         if(fives == 5)primes += 2,fives = 1; 
-        std::cout << primes.toString10() << std::endl << ' ';
         int checks = aksPrime<uint_inf>(primes);
         if(checks == -1){
-            std::cout  << '\r' << "it's a prime number!!!                                                          "<< std::endl;
-            file3 << primes.toString10() << std::endl;
+            std::string prime = "yeet"; //primes.toString10();
+            std::cout  << '\r' << prime << " has a high chance it's a prime number!!!                                                          "<< std::endl;
+            file2 << prime << std::endl;
         } else {
             std::cout  << '\r' <<"It took " << checks << " checks to find out it's not a prime number                                  " << std::endl;
             file1 << checks << std::endl;
@@ -55,7 +57,6 @@ int main() {
     }
     file1.close();
     file2.close();
-    file3.close();
     do {
         std::cout << '\n' << "Press enter to continue...";
     } while (std::cin.get() != '\n');

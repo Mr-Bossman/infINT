@@ -37,5 +37,12 @@ namespace eFunc
         Remainder = Dividend%Divisor;
         return Dividend/Divisor;
     }
+    template <class Type>
+    Type mul_bits(const Type &Multiplicand, const Type &Multiplier,Type &HighProduct)  {  
+        return _umul128(Multiplier, Multiplicand, &HighProduct);
+    }
+    class newTypes {
+
+    };
 
 }

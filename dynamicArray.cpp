@@ -10,7 +10,7 @@ class dynamic_array {
     dynamic_array(Type initVal = 0 ,size_t size = 1,const Type fill = 0){
         this->size = size;
         pointer = new Type[size];
-        memset(pointer, fill, size*sizeof(Type));
+        set(pointer, fill, size);
         pointer[0] = initVal;
         this->fill = fill;
     }
@@ -28,20 +28,20 @@ class dynamic_array {
         delete[] pointer;
         this->size = rvalue.size;
         pointer = new Type[rvalue.size];
-        memcpy(pointer, rvalue.pointer, sizeof(Type)*rvalue.size );
+        cpy(pointer, rvalue.pointer, rvalue.size );
     }
     dynamic_array& operator= (dynamic_array&& rvalue){
         delete[] pointer;
         this->size = rvalue.size;
         pointer = new Type[rvalue.size];
-        memcpy(pointer, rvalue.pointer, sizeof(Type)*rvalue.size );
+        cpy(pointer, rvalue.pointer, rvalue.size );
         return *this;
     }
     void operator=(const dynamic_array &rvalue) {
         delete[] pointer;
         this->size = rvalue.size;
         pointer = new Type[rvalue.size];
-        memcpy(pointer, rvalue.pointer, sizeof(Type)*rvalue.size );
+        cpy(pointer, rvalue.pointer, rvalue.size );
     }
     size_t realSize() const {
         size_t i = size-1;
@@ -62,12 +62,26 @@ class dynamic_array {
     }
     Type* expand(const size_t &size) {
         Type *new_ptr = new Type[size];
-        memset(new_ptr+this->size, fill, (size-this->size)*sizeof(Type));
+        set(new_ptr+this->size, fill, (size-this->size));
         while(this->size--){
             new_ptr[this->size] = pointer[this->size];
         }
         delete[] pointer; 
         this->size = size;
         return pointer = new_ptr;
+    }
+    
+    Type * cpy (Type *dest, const Type *src, size_t len) {
+        Type *d = dest;
+        const Type *s = src;
+        while (len--)
+            *d++ = *s++;
+        return dest;
+    }
+    Type * set (Type *dest, const Type val, size_t len) {
+    Type *ptr = dest;
+    while (len--)
+        *ptr++ = val;
+    return dest;
     }
 };

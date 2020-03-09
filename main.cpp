@@ -36,15 +36,27 @@ int main() {
     std::ofstream file1,file2;
     file1.open ("out.txt");
     file2.open ("primes.txt");
-    int size = 1; 
+    int size = 4; 
     //start at num with the first digit 5 ever power of 16^x - 1 will end in 5 i think 4194304
 
     uint8_t fives = 0;
-    uint_inf primes = uint_inf(UINT64_MAX ,size);
+    uint64_t* primes = new uint64_t[4];
+    for(int i = 0; i < size; i++)primes[i] = 0;
+    uint64_t* no = new uint64_t[4];
+    for(int i = 0; i < size; i++)no[i] = UINT64_MAX;
+    no[0] -= 3;
+    uint64_t* yeet = new uint64_t[4];
+    for(int i = 0; i < size; i++)yeet[i] = 0;
+    yeet[0] = 4;
+    eFunc::_mm256_add_256(*(__m256i_u*)no,*(__m256i_u*)yeet,*(__m256i_u*)primes);
+    std::cout << std::bitset<64>(primes[3])<< std::bitset<64>(primes[2])<< std::bitset<64>(primes[1])<< std::bitset<64>(primes[0]);
+
+
+
     //for(int i = 100; i > 1; i--)primes *= i;
     //for(int i = 1; i < size; i++)primes.value[i] = UINT64_MAX;
-    std::cout  << "Starting at " << primes.toString10() << std::endl;
-    while(true){
+    /*std::cout  << "Starting at " << primes.toString10() << std::endl;
+    while(false){
         if(fives == 5)primes += 2,fives = 1; 
         int checks = aksPrime<uint_inf>(primes);
         if(checks == -1){
@@ -61,7 +73,7 @@ int main() {
     file2.close();
     do {
         std::cout << '\n' << "Press enter to continue...";
-    } while (std::cin.get() != '\n');
+    } while (std::cin.get() != '\n');*/
 }
 
 //    for (int n=1;n<60;n++){uint64_t b=n,out=n,a=2;printf("\n1 %d ",n);while(out>1)b--,out*=b,out/=a++,printf("%d ",out);}

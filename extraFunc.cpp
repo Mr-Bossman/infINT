@@ -46,11 +46,11 @@ namespace eFunc
         
 
     };
-    extern __inline void
+    /*extern __inline void
     __attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
     _mm256_add_256 (__m256i_u __A, __m256i_u __B,__m256i_u &__sum)
     {
         __sum = (__m256i_u) (__A + __B);
-    }
+    }*/
 
 }

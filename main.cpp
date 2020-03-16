@@ -4,7 +4,7 @@
 #include <bitset>
 #include <string.h>
 #include <String>
-#include "uint_inf.cpp"
+#include "floating_inf.cpp"
 #include <fstream>
 //#include "InfInt.h"
 #include <assert.h>
@@ -12,7 +12,7 @@
 //#include "extraFunc.cpp"
 
 
-template <class Type>
+/*template <class Type>
 int aksPrime(uint_inf &P){
     uint_inf b=P,columb=2,out=P;//,loops = (P>>1)+1;
     int checks = 0;
@@ -31,8 +31,9 @@ int aksPrime(uint_inf &P){
         checks++;
     }
     return -1;
-}
+}*/
 int main() {
+    /*
     std::ofstream file1,file2;
     file1.open ("out.txt");
     file2.open ("primes.txt");
@@ -50,7 +51,7 @@ int main() {
     yeet[0] = 4;
     eFunc::_mm256_add_256(*(__m256i_u*)no,*(__m256i_u*)yeet,*(__m256i_u*)primes);
     std::cout << std::bitset<64>(primes[3])<< std::bitset<64>(primes[2])<< std::bitset<64>(primes[1])<< std::bitset<64>(primes[0]);
-
+*/
 
 
     //for(int i = 100; i > 1; i--)primes *= i;

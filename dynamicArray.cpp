@@ -3,6 +3,7 @@
 #include <string.h>
 template <class Type>
 class dynamic_array {
+    //need to make it so that we can remove the first part of a number like trunkate but in the oposite direction
     public:
     Type *pointer = nullptr ;
     size_t size;

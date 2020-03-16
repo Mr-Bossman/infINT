@@ -8,8 +8,7 @@
 #include <bitset>
 /* unsinged int library 
 needs better multiplacation and division functions
-add mod and div combo functions
-find memory leeks !!!! big problem
+needs better shift cant shift more than 64
 find problems
 streamline function implementatons
 */
@@ -37,7 +36,7 @@ class uint_inf{
         this->value[0] = rvalue;
     }
     void del(){
-        return this->value.del();
+        this->value.del();
     }
     size_t realSize()const{
         return this->value.realSize();
@@ -208,17 +207,17 @@ class uint_inf{
         return ret;
     }
     uint_inf operator++(int null){
-        for(Type i = 0;this->value[i]++ == (UINTsizeof(Type)_MAX);i++);
+        for(Type i = 0;this->value[i]++ == sizeof(Type);i++);
         return *this;
     }
     void operator+=(const Type &rvalue){
         if(eFunc::addOvf(this->value[0],rvalue)){
-                for(Type b = 1;this->value[b]++ == (UINTsizeof(Type)_MAX);b++);
+                for(Type b = 1;this->value[b]++ == sizeof(Type);b++);
         }
     }
     void addOffset(const Type &rvalue, const size_t &offset){
         if(eFunc::addOvf(this->value[offset],rvalue)){
-                for(Type b = 1+offset;this->value[b]++ == (UINTsizeof(Type)_MAX);b++);
+                for(Type b = 1+offset;this->value[b]++ == sizeof(Type);b++);
         }
     }
     uint_inf addOffset(const Type &rvalue, const size_t &offset) const {
@@ -229,7 +228,7 @@ class uint_inf{
     void operator+=(const uint_inf &rvalue){
         for(size_t i = 0;i < this->value.size || i < rvalue.value.size; i++){
             if(eFunc::addOvf(this->value[i],rvalue.value[i])){
-                for(Type b = i+1;this->value[b]++ == (UINTsizeof(Type)_MAX);b++);
+                for(Type b = i+1;this->value[b]++ == sizeof(Type);b++);
             }
         }
     }
@@ -280,7 +279,7 @@ class uint_inf{
         for(size_t b = 0;b < rvalue.value.size; b++){
             for(size_t i = 0;i < this->value.size; i++){
                 Type highWord;
-                out.addOffset(eFunc::<Type>mul_bits(rvalue.value[b],this->value[i],highWord),(b+i));
+                out.addOffset(eFunc::mul_bits<Type>(rvalue.value[b],this->value[i],highWord),(b+i));
                 out.addOffset(highWord,(b+i)+1);
             }
         }
@@ -290,7 +289,7 @@ class uint_inf{
         uint_inf out = uint_inf(0,this->value.realSize()+1); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t i = 0;i < this->value.size; i++){
                 Type highWord;
-                out.addOffset(eFunc::<Type>mul_bits(rvalue,this->value[i],highWord),i);
+                out.addOffset(eFunc::mul_bits<Type>(rvalue,this->value[i],highWord),i);
                 out.addOffset(highWord,i+1);
         }
         return out;
@@ -299,7 +298,7 @@ class uint_inf{
         uint_inf out = uint_inf(0,this->value.realSize()+1); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t i = 0;i < this->value.size; i++){
                 Type highWord;
-                out.addOffset(eFunc::<Type>mul_bits(rvalue,this->value[i],highWord),i);
+                out.addOffset(eFunc::mul_bits<Type>(rvalue,this->value[i],highWord),i);
                 out.addOffset(highWord,i+1);
         }
         *this = out; // slow
@@ -310,7 +309,7 @@ class uint_inf{
         for(size_t b = 0;b < rvalue.value.size; b++){
             for(size_t i = 0;i < this->value.size; i++){
                 Type highWord;
-                out.addOffset(eFunc::<Type>mul_bits(rvalue.value[b],this->value[i],highWord),(b+i));
+                out.addOffset(eFunc::mul_bits<Type>(rvalue.value[b],this->value[i],highWord),(b+i));
                 out.addOffset(highWord,(b+i)+1);
             }
         }

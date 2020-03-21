@@ -11,6 +11,7 @@ needs better multiplacation and division functions
 needs better shift cant shift more than 64
 find problems
 streamline function implementatons
+add sub offset
 */
 template <class Type>
 class uint_inf{
@@ -206,7 +207,7 @@ class uint_inf{
         ret &= rvalue;
         return ret;
     }
-    uint_inf operator++(int null){
+    uint_inf operator++(){
         for(Type i = 0;this->value[i]++ == sizeof(Type);i++);
         return *this;
     }
@@ -217,7 +218,7 @@ class uint_inf{
     }
     void addOffset(const Type &rvalue, const size_t &offset){
         if(eFunc::addOvf(this->value[offset],rvalue)){
-                for(Type b = 1+offset;this->value[b]++ == sizeof(Type);b++);
+                for(size_t b = 1+offset;this->value[b]++ == sizeof(Type);b++);// some how this works but it shoulnt value == sizeof(type)
         }
     }
     uint_inf addOffset(const Type &rvalue, const size_t &offset) const {
@@ -242,7 +243,7 @@ class uint_inf{
         ret += rvalue;
         return ret;
     }
-    uint_inf operator--(int null){
+    uint_inf operator--(){
         for(Type i = 0;this->value[i]-- == 0;i++)if(i >= this->value.size-1)break;
         return *this;
     }
@@ -255,6 +256,16 @@ class uint_inf{
                 this->value[i] -= rvalue.value[i];
             }
         }
+    }
+    void subOffset(const Type &rvalue, const size_t &offset){
+        if(eFunc::subUnf(this->value[offset],rvalue)){
+                for(size_t b = 1+offset;this->value[b]-- == 0;b++);
+        }
+    }
+    uint_inf subOffset(const Type &rvalue, const size_t &offset) const {
+        uint_inf ret = *this;
+        ret.subOffset(rvalue,offset);
+        return ret;
     }
     void operator-=(const Type &rvalue){
         if(this->value[0] < rvalue){

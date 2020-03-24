@@ -4,7 +4,7 @@
 #include <bitset>
 #include <string.h>
 #include <String>
-#include "uint_inf.cpp"
+#include "uint_inf_bits.cpp"
 #include <fstream>
 //#include "InfInt.h"
 #include <assert.h>
@@ -13,8 +13,8 @@
 
 
 template <class Type>
-int aksPrime(uint_inf &P){
-    uint_inf b=P,columb=2,out=P;//,loops = (P>>1)+1;
+int aksPrime(Type &P){
+    Type b=P,columb=2,out=P;//,loops = (P>>1)+1;
     int checks = 0;
     while(checks < 500){ //columb<loops && 
         uint64_t size = out.realSize();
@@ -24,7 +24,7 @@ int aksPrime(uint_inf &P){
         out /= columb;
         std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing.. ";
         columb++;
-        uint_inf check = (out%P);
+        Type check = (out%P);
         std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing...";
         if(check != 0) return checks;
         std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing   ";
@@ -33,35 +33,12 @@ int aksPrime(uint_inf &P){
     return -1;
 }
 int main() {
-    std::ofstream file1,file2;
-    file1.open ("out.txt");
-    file2.open ("primes.txt");
-    int size = 1; 
-    //start at num with the first digit 5 ever power of 16^x - 1 will end in 5 i think 4194304
+    //start at num with the first digit 5 ever power of 16^x - 1 will end in 5 
 
-    uint8_t fives = 0;
-    uint_inf primes = uint_inf(UINT64_MAX ,size);
-    //for(int i = 100; i > 1; i--)primes *= i;
-    //for(int i = 1; i < size; i++)primes.value[i] = UINT64_MAX;
-    std::cout  << "Starting at " << primes.toString10() << std::endl;
-    while(true){
-        if(fives == 5)primes += 2,fives = 1; 
-        int checks = aksPrime<uint_inf>(primes);
-        if(checks == -1){
-            std::string prime = primes.toString10();
-            std::cout  << '\r' << prime << " has a high chance it's a prime number!!!                                                          "<< std::endl;
-            file2 << prime << std::endl;
-        } else {
-            std::cout  << '\r' <<"It took " << checks << " checks to find out it's not a prime number                                  " << std::endl;
-            file1 << checks << std::endl;
-        }
-        primes += 2,fives++;
-    }
-    file1.close();
-    file2.close();
-    do {
-        std::cout << '\n' << "Press enter to continue...";
-    } while (std::cin.get() != '\n');
+    uint_inf<uint_fast64_t> primes = uint_inf<uint_fast64_t>(UINT64_MAX);
+    primes.value[1] = UINT64_MAX;
+    std::cout << (primes%7).toString10() << " " << primes.toString10();
+
 }
 
 //    for (int n=1;n<60;n++){uint64_t b=n,out=n,a=2;printf("\n1 %d ",n);while(out>1)b--,out*=b,out/=a++,printf("%d ",out);}

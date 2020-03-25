@@ -10,8 +10,7 @@
 needs better multiplacation and division functions
 needs better shift cant shift more than 64
 find problems
-streamline function implementatons
-test addofset and test sub offset and test in general
+optimise
 */
 template <class Type>
 class uint_inf{
@@ -19,8 +18,7 @@ class uint_inf{
     dynamic_array <Type> value;
     size_t &size = value.size; 
     uint_inf() : value(dynamic_array <Type>(0,4)) {} 
-    //uint_inf(Type init = 0) : value(dynamic_array <Type>(init,1,0)){} 
-    uint_inf(Type init = 0,size_t start_size= 4): value(dynamic_array <Type>(init,start_size)){}
+    uint_inf(Type init = 0,size_t start_size= 4) : value(dynamic_array <Type>(init,start_size)){}
 
     uint_inf (const uint_inf<Type>& rvalue) {//http://www.cplusplus.com/doc/tutorial/classes2/
         this->value = dynamic_array <Type>(0,4);
@@ -33,8 +31,9 @@ class uint_inf{
         this->value = rvalue.value;
         return *this;
     }
-    void operator=(const Type &rvalue){
-        this->value[0] = rvalue;
+    uint_inf operator=(const Type &rvalue){
+        this->value[0] = rvalue; // posible problem  with other bits set
+        return *this;
     }
     void del(){
         this->value.del();
@@ -106,19 +105,21 @@ class uint_inf{
         if(this->value.realSize()>1) return 1;
         return (this->value[0] >= rvalue);
     }
-    void operator>>=(const size_t &rvalue){
+    uint_inf<Type> operator>>=(const size_t &rvalue){
         for(Type i = 0; i < this->value.size-1; i++){
             this->value[i] >>= rvalue; 
             this->value[i] |= this->value[i+1]<<(Type)(8*sizeof(Type))-rvalue;
         }
         this->value[this->value.size-1] >>= rvalue;
+        return *this;
     }
-    void operator<<=(const size_t &rvalue){
+    uint_inf<Type> operator<<=(const size_t &rvalue){
         for(Type i = this->value.realSize()+1; i > 0 ; i--){
             this->value[i] <<= rvalue;
             this->value[i] |= this->value[i-1]>>(Type)(8*sizeof(Type))-rvalue;
         }
         this->value[0] <<= rvalue;
+        return *this;
     }
     uint_inf<Type> operator<<(const size_t &rvalue) const {
         uint_inf<Type> ret = *this;
@@ -130,46 +131,54 @@ class uint_inf{
         ret >>= rvalue;
         return ret;
     }
-    void div2() {
+    uint_inf<Type> div2() {
         for(Type i = 0; i < this->value.size-1; i++){
             this->value[i] >>= 1; 
             this->value[i] |= this->value[i+1]<<(Type)(8*sizeof(Type)-1);
         }
         this->value[this->value.size-1] >>= 1;
+        return *this;
     }
-    void mul2() {
+    uint_inf<Type> mul2() {
         for(Type i = this->value.realSize()+1; i > 0 ; i--){
             this->value[i] <<= 1;
             this->value[i] |= this->value[i-1]>>(Type)(8*sizeof(Type)-1);
         }
         this->value[0] <<= 1;
+        return *this;
     }
-    void operator|=(const uint_inf<Type> &rvalue){
+    uint_inf operator|=(const uint_inf<Type> &rvalue){
         Type test = (rvalue.value.realSize() > this->value.realSize())? rvalue.value.realSize():this->value.realSize();
         for(Type i = 0; i < test; i++){
             this->value[i] |= rvalue.value[i];
         }
+        return *this;
     }
-    void operator&=(const uint_inf<Type> &rvalue){
+    uint_inf<Type> operator&=(const uint_inf<Type> &rvalue){
         Type test = (rvalue.value.realSize() > this->value.realSize())? rvalue.value.realSize():this->value.realSize();
         for(Type i = 0; i < test; i++){
             this->value[i] &= rvalue.value[i];
         }
+        return *this;
     }
-    void operator^=(const uint_inf<Type> &rvalue){
+    uint_inf<Type> operator^=(const uint_inf<Type> &rvalue){
         Type test = (rvalue.value.realSize() > this->value.realSize())? rvalue.value.realSize():this->value.realSize();
         for(Type i = 0; i < test; i++){
             this->value[i] ^= rvalue.value[i];
         }
+        return *this;
     }
-    void operator^=(const Type &rvalue){
-            this->value[0] ^= rvalue;
+    uint_inf<Type> operator^=(const Type &rvalue){
+        this->value[0] ^= rvalue;
+        return *this;
     }
-    void operator&=(const Type &rvalue){
-            this->value[0] &= rvalue;
+    uint_inf<Type> operator&=(const Type &rvalue){
+        this->value[0] &= rvalue;
+        return *this;
     }
-    void operator|=(const Type &rvalue){
-            this->value[0] |= rvalue;
+    uint_inf<Type> operator|=(const Type &rvalue){
+        this->value[0] |= rvalue;
+        return *this;
     }
     uint_inf<Type> operator~(){
         for(Type i = 0; i < this->value.size; i++){
@@ -211,27 +220,30 @@ class uint_inf{
         for(Type i = 0;this->value[i]++ == UINT64_MAX;i++);
         return *this;
     }
-    void operator+=(const Type &rvalue){
+    uint_inf<Type> operator+=(const Type &rvalue){
         if(eFunc::addOvf(this->value[0],rvalue)){
                 for(Type b = 1;this->value[b]++ == UINT64_MAX;b++);
         }
+        return *this;
     }
-    void addOffset(const Type &rvalue, const size_t &offset){
+    uint_inf<Type> addOffset(const Type &rvalue, const size_t &offset){
         if(eFunc::addOvf(this->value[offset],rvalue)){
                 for(size_t b = 1+offset;this->value[b]++ == UINT64_MAX;b++);// some how this works but it shoulnt value == sizeof(type)
         }
+        return *this;
     }
     uint_inf<Type> addOffset(const Type &rvalue, const size_t &offset) const {
         uint_inf<Type> ret = *this;
         ret.addOffset(rvalue,offset);
         return ret;
     }
-    void operator+=(const uint_inf<Type> &rvalue){
+    uint_inf<Type> operator+=(const uint_inf<Type> &rvalue){
         for(size_t i = 0;i < this->value.size || i < rvalue.value.size; i++){
             if(eFunc::addOvf(this->value[i],rvalue.value[i])){
                 for(Type b = i+1;this->value[b]++ == UINT64_MAX;b++);
             }
         }
+        return *this;
     }
     uint_inf<Type> operator+(const uint_inf<Type> &rvalue) const {
         uint_inf<Type> ret = *this;
@@ -247,7 +259,7 @@ class uint_inf{
         for(Type i = 0;this->value[i]-- == 0;i++)if(i >= this->value.size-1)break;
         return *this;
     }
-    void operator-=(const uint_inf<Type> &rvalue){
+    uint_inf<Type> operator-=(const uint_inf<Type> &rvalue){
         for(size_t i = 0;i < this->value.size; i++){
             if(this->value[i] < rvalue.value[i]){
                 this->value[i] -= rvalue.value[i];
@@ -256,24 +268,27 @@ class uint_inf{
                 this->value[i] -= rvalue.value[i];
             }
         }
+        return *this;
     }
-    void subOffset(const Type &rvalue, const size_t &offset){
+    uint_inf<Type> subOffset(const Type &rvalue, const size_t &offset){
         if(eFunc::subUnf(this->value[offset],rvalue)){
                 for(size_t b = 1+offset;this->value[b]-- == 0;b++)if(b >= this->value.size-1)break;
         }
+        return *this;
     }
     uint_inf<Type> subOffset(const Type &rvalue, const size_t &offset) const {
         uint_inf<Type> ret = *this;
         ret.subOffset(rvalue,offset);
         return ret;
     }
-    void operator-=(const Type &rvalue){
+    uint_inf<Type> operator-=(const Type &rvalue){
         if(this->value[0] < rvalue){
             this->value[0] -= rvalue;
             for(Type b = 1;this->value[b]-- == 0;b++)if(b >= this->value.size-1)break;
          }else {
             this->value[0] -= rvalue;
         }
+        return *this;
     }
     uint_inf<Type> operator-(const uint_inf<Type> &rvalue) const {
         uint_inf<Type> ret = *this;
@@ -305,7 +320,7 @@ class uint_inf{
         }
         return out;
     }
-    void operator*=(const Type &rvalue){
+    uint_inf<Type> operator*=(const Type &rvalue){
         uint_inf<Type> out = uint_inf<Type>(0,this->value.realSize()+1); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t i = 0;i < this->value.size; i++){
                 Type highWord;
@@ -314,8 +329,9 @@ class uint_inf{
         }
         *this = out; // slow
         out.del(); 
+        return *this;
     }
-    void operator*=(const uint_inf<Type> &rvalue){
+    uint_inf<Type> operator*=(const uint_inf<Type> &rvalue){
         uint_inf<Type> out = uint_inf<Type>(0,this->value.realSize()+rvalue.value.realSize()); // find size bcuase of overflow it will be larger // is it posible to have it without rvalue new variable 
         for(size_t b = 0;b < rvalue.value.size; b++){
             for(size_t i = 0;i < this->value.size; i++){
@@ -326,8 +342,9 @@ class uint_inf{
         }
         *this = out; // slow
         out.del();   
+        return *this;
     }
-    void operator/=(const uint_inf<Type> &rvalue){
+    uint_inf<Type> operator/=(const uint_inf<Type> &rvalue){
         uint_inf<Type> remainder = 0;
         for(Type i = this->value.size; i-- > 0;){
             for(Type b = 8*sizeof(Type); b-- > 0;){
@@ -343,8 +360,9 @@ class uint_inf{
             }
         }   
         remainder.del();
+        return *this;
     }
-    void operator/=(const Type &rvalue){
+    uint_inf<Type> operator/=(const Type &rvalue){
         uint_inf<Type> remainder = 0;
         for(Type i = this->value.size; i-- > 0;){
             for(Type b = 8*sizeof(Type); b-- > 0;){
@@ -360,6 +378,7 @@ class uint_inf{
             }
         }   
         remainder.del();
+        return *this;
     }
     uint_inf<Type> operator/(const Type &rvalue) const {
         uint_inf<Type> out = *this;
@@ -371,7 +390,7 @@ class uint_inf{
         out /= rvalue;
         return out;
     }
-    void operator%=(const Type &rvalue) {
+    uint_inf<Type> operator%=(const Type &rvalue) {
         uint_inf<Type> remainder = 0;
         for(Type i = value.size; i-- > 0;){
             for(Type b = 8*sizeof(Type); b-- > 0;){
@@ -388,8 +407,9 @@ class uint_inf{
         }  
         *this = remainder; 
         remainder.del();
+        return *this;
     }
-    void operator%=(const uint_inf<Type> &rvalue) {
+    uint_inf<Type> operator%=(const uint_inf<Type> &rvalue) {
         uint_inf<Type> remainder = 0;
         for(Type i = value.size; i-- > 0;){
             for(Type b = 8*sizeof(Type); b-- > 0;){
@@ -406,6 +426,7 @@ class uint_inf{
         }  
         *this = remainder;
         remainder.del();
+        return *this;
     }
     uint_inf<Type> divideRemainder(const Type &rvalue){
         uint_inf<Type> remainder = 0;

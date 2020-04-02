@@ -37,7 +37,7 @@ int main() {
 
     uint_inf<uint_fast64_t> primes = uint_inf<uint_fast64_t>(UINT64_MAX);
     primes.value[1] = UINT64_MAX;
-    std::cout << (primes%7).toString10() << " " << primes.toString10();
+    std::cout << (primes.subOffset(UINT64_MAX,1)).toString2() << " " << primes.toString10();
 
 }
 

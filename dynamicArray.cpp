@@ -57,7 +57,7 @@ class dynamic_array {
         this->size = rvalue.size;
     }
     size_t realSize() const {
-        size_t i = this->size-1;
+        register size_t i = this->size-1;
         while(this->pointer[i]==0 && i > 0)i--;
         return i;
     }
@@ -76,7 +76,7 @@ class dynamic_array {
     }
     Type* expand(const size_t size) {
         Type *new_ptr = new Type[size];
-        size_t loop = size;
+        register size_t loop = size;
         while(loop-- > this->size){
             new_ptr[loop] = 0;
         }
@@ -88,13 +88,31 @@ class dynamic_array {
         return this->pointer = new_ptr;
     }
     Type pop(){
-        Type ret = *this[0];
+        register Type ret = (*this)[0];
         this->offset++;
         return ret;
     }
-    Type* Rshift(size_t shift){
+    void pop(const size_t& shift){
+        this->offset += shift;
+    }
+    Type* Rshift(size_t& shift){
+        register Type *new_ptr = new Type[this->size+shift];
+        register size_t size = this->size;
+        this->size += shift;
+        while(size--){
+            new_ptr[size+shift] = pointer[size+this->offset];
+        }
+        while(shift--){
+            new_ptr[shift] = 0;
+        }
+        delete[] pointer; 
+        return this->pointer = new_ptr;
+    }
+    Type* Rshift(const size_t&& shiftA){
+        register size_t shift = shiftA;
         Type *new_ptr = new Type[this->size+shift];
-        size = this->size;
+        register size_t size = this->size;
+        this->size += shift;
         while(size--){
             new_ptr[size+shift] = pointer[size+this->offset];
         }

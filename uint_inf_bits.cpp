@@ -33,6 +33,7 @@ class uint_inf{
     }
     uint_inf<Type> operator=(const Type &rvalue){
         this->value[0] = rvalue;
+        return *this;
     }
     void del(){
         this->value.del();

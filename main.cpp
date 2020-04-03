@@ -10,35 +10,22 @@
 #include <assert.h>
 
 //#include "extraFunc.cpp"
-
-
 template <class Type>
-int aksPrime(Type &P){
-    Type b=P,columb=2,out=P;//,loops = (P>>1)+1;
-    int checks = 0;
-    while(checks < 500){ //columb<loops && 
-        uint64_t size = out.realSize();
+void pascal(const Type &P){
+    Type b=P, out = P;
+    std::cout << "1 " << P.toString10() << ' ';
+    uint_fast64_t columbs = 2;
+    while(out>1){
         b--;
         out *= b;
-        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing.  ";
-        out /= columb;
-        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing.. ";
-        columb++;
-        Type check = (out%P);
-        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing...";
-        if(check != 0) return checks;
-        std::cout <<"\r\rIt's taken " << checks << " checks so far. There are " << size << " Qwords in the variable. Testing   ";
-        checks++;
+        out /= columbs;
+        columbs++;
+        std::cout << out.toString10()<< ' ';
     }
-    return -1;
+    std::cout << std::endl << std::endl;
 }
 int main() {
-    //start at num with the first digit 5 ever power of 16^x - 1 will end in 5 
-
-    uint_inf<uint_fast64_t> primes = uint_inf<uint_fast64_t>(UINT64_MAX);
-    primes.value[1] = UINT64_MAX;
-    std::cout << (primes.subOffset(UINT64_MAX,1)).toString2() << " " << primes.toString10();
-
+    pascal<uint_inf<uint_fast64_t>>(UINT64_MAX);
 }
 
 //    for (int n=1;n<60;n++){uint64_t b=n,out=n,a=2;printf("\n1 %d ",n);while(out>1)b--,out*=b,out/=a++,printf("%d ",out);}
